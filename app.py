@@ -20,6 +20,7 @@ app.secret_key = 'drinking'
 linreg1 = LinearRegression()
 linreg2 = LinearRegression()
 linreg3 = LinearRegression()
+y_pred = []
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -101,7 +102,6 @@ def init():
 @app.route('/predict', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-        # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
@@ -111,7 +111,6 @@ def upload_file():
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            # We can use original name of the file
             filename = secure_filename(file.filename)
 
             # First save
@@ -120,7 +119,6 @@ def upload_file():
             df = pd.read_csv(UPLOAD_FOLDER + '/' + filename)
 
             skf = StratifiedKFold(n_splits=5, random_state=RANDOM_STATE)
-            df = pd.read_csv('student-test.csv')
             df=df.drop_duplicates(["school","sex","age","address","famsize","Pstatus","Medu","Fedu","Mjob","Fjob","reason","nursery","internet"])  
 
             #Preparing dataframe
@@ -172,7 +170,7 @@ def upload_file():
             print(y_pred)
 
             # POST OK
-            return render_template('result.html', error=None)
+            return 'Done', 200
 
         else: # Error
             # POST ERROR
@@ -180,6 +178,11 @@ def upload_file():
 
     # GET
     return render_template('upload.html', error=None)
+
+@app.route('/result', methods=['POST'])
+def result():
+    
+    return 'Need results', 200
 
 if __name__ == '__main__':
     # port = int(os.getenv("PORT"))

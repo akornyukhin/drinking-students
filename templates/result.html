@@ -1,3 +1,16 @@
-{% extends "base.html" %}
-<h1>Prediction for GE</h1>
-<p method="post">{% block content %} Content {% endblock %}</p>
+{% extends "base.html" %} {% block content %}
+<table border="1">
+    <caption>Predictions for semesters results</caption>
+    <tr>
+        <th>G1</th>
+        <th>G2</th>
+        <th>G3</th>
+    </tr>
+    {% for items in result %}
+    <tr>
+        <td>{{ items[0]}}</td>
+        <td>{{ items[1]}}</td>
+        <td>{{ items[2]}}</td>
+    </tr>
+    {% endfor %}
+</table>{% endblock %}

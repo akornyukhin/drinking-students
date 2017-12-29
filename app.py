@@ -133,6 +133,8 @@ def upload_file():
 
             df_with_dumnies_lin = df_with_dumnies.loc[:,~df_with_dumnies.columns.isin(['G1', 'G2', 'G3'])]
 
+            df_result = pd.DataFrame()
+
             TARGET = 'G1'
             df_with_dumnies_lin['G1'] = None
             y = df_with_dumnies.loc[:,TARGET]
@@ -142,6 +144,8 @@ def upload_file():
             for train_idx, test_idx in skf.split(X, y):
                 G_pred_lin = linreg1.predict(X.iloc[test_idx])
                 df_with_dumnies_lin['G1'].iloc[test_idx] = G_pred_lin
+
+            df_result['G1'] = df_with_dumnies_lin['G1'].copy()
 
             #Predic G2
             TARGET = 'G2'
@@ -154,7 +158,9 @@ def upload_file():
             for train_idx, test_idx in skf.split(X2, y2):
                 G_pred_lin = linreg2.predict(X2.iloc[test_idx])
                 df_with_dumnies_lin['G2'].iloc[test_idx] = G_pred_lin
-                        
+
+            df_result['G2'] = df_with_dumnies_lin['G2'].copy()
+
             #Predic G3
             TARGET = 'G3'
 
@@ -167,10 +173,12 @@ def upload_file():
                 G_pred_lin = linreg3.predict(X3.iloc[test_idx])
                 y_pred.iloc[test_idx] = G_pred_lin
 
-            print(y_pred)
+            df_result['G3'] = pd.Series(y_pred)
+
+            print(df_result)
 
             # POST OK
-            return 'Done', 200
+            return render_template('result.html', result=df_result.as_matrix())
 
         else: # Error
             # POST ERROR
@@ -179,14 +187,7 @@ def upload_file():
     # GET
     return render_template('upload.html', error=None)
 
-@app.route('/result', methods=['POST'])
-def result():
-    
-    return 'Need results', 200
-
 if __name__ == '__main__':
-    # port = int(os.getenv("PORT"))
+    port = int(os.getenv("PORT"))
     debug = os.getenv("FLASK_DEBUG")
-    app.run(host='0.0.0.0', debug=debug)
-
-    # port=port,
+    app.run(host='0.0.0.0', port=port, debug=debug)

@@ -1,0 +1,5 @@
+---
+applications:
+- name: drinking-students
+  memory: 256M
+
